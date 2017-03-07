@@ -56,7 +56,7 @@ class Controller extends ControllerAdmin
         $hasPiwikBlog = $widgetsList->isDefined('RssWidget', 'rssPiwik');
         $hasPremiumFeatures = $widgetsList->isDefined('Marketplace', 'getPremiumFeatures');
         $hasNewPlugins = $widgetsList->isDefined('Marketplace', 'getNewPlugins');
-        $hasDiagnostics = $widgetsList->isDefined('About Piwik', 'Installation_SystemCheck');
+        $hasDiagnostics = $widgetsList->isDefined('Installation', 'getSystemCheck');
 
         return $this->renderTemplate('home', array(
             'isMarketplaceEnabled' => $isMarketplaceEnabled,
@@ -132,6 +132,12 @@ class Controller extends ControllerAdmin
             $mail['type'] = Common::getRequestVar('mailType', '');
             $mail['username'] = Common::unsanitizeInputValue(Common::getRequestVar('mailUsername', ''));
             $mail['password'] = Common::unsanitizeInputValue(Common::getRequestVar('mailPassword', ''));
+
+            if (!array_key_exists('mailPassword', $_POST)) {
+                // use old password if it wasn't set in request
+                $mail['password'] = Config::getInstance()->mail['password'];
+            }
+
             $mail['encryption'] = Common::getRequestVar('mailEncryption', '');
 
             Config::getInstance()->mail = $mail;
